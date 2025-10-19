@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI IDE - Intelligent Development Environment</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- Monaco Editor -->
+    <link rel="stylesheet" data-name="vs/editor/editor.main" href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/editor/editor.main.min.css">
+</head>
+<body>
+    <!-- Background Overlay -->
+    <div class="background-overlay"></div>
+
+    <!-- Header -->
+    <header class="glass-panel">
+        <div class="header-left">
+            <h1><span class="logo-icon">⚡</span> AI IDE</h1>
+        </div>
+        <div class="header-center">
+            <div class="status-indicator">
+                <span class="status-dot"></span>
+                <span class="status-text" data-en="Ready" data-ar="جاهز">Ready</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <button class="icon-button" id="dirToggle" title="Toggle RTL/LTR">
+                <span>⇄</span>
+            </button>
+            <button class="icon-button" id="themeToggle" title="Toggle Theme">
+                <span class="theme-icon">🌙</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Editor Section -->
+        <div class="editor-section">
+            <!-- Editor Controls -->
+            <div class="controls-panel glass-panel">
+                <div class="controls-left">
+                    <button class="btn btn-primary" id="runBtn">
+                        <span>▶</span>
+                        <span data-en="Run" data-ar="تشغيل">Run</span>
+                    </button>
+                    <button class="btn btn-secondary" id="clearCodeBtn">
+                        <span>🗑</span>
+                        <span data-en="Clear Code" data-ar="مسح الكود">Clear Code</span>
+                    </button>
+                </div>
+                <div class="controls-right">
+                    <span class="language-badge">Python</span>
+                </div>
+            </div>
+
+            <!-- Code Editor -->
+            <div class="editor-container glass-panel">
+                <div id="monacoEditor"></div>
+            </div>
+
+            <!-- Runtime Inputs -->
+            <div class="inputs-section glass-panel">
+                <label class="section-label" data-en="Runtime Inputs (one per line)" data-ar="مدخلات التشغيل (واحد لكل سطر)">Runtime Inputs (one per line)</label>
+                <textarea id="runtimeInputs" placeholder="Enter inputs here, one per line..."></textarea>
+            </div>
+
+            <!-- Output Console -->
+            <div class="output-section glass-panel">
+                <div class="output-header">
+                    <label class="section-label" data-en="Output Console" data-ar="وحدة الإخراج">Output Console</label>
+                    <button class="btn-icon" id="clearOutputBtn" title="Clear Output">
+                        <span>✕</span>
+                    </button>
+                </div>
+                <pre id="outputConsole"></pre>
+            </div>
+        </div>
+
+        <!-- Resizer -->
+        <div class="resizer" id="resizer"></div>
+
+        <!-- AI Section -->
+        <div class="ai-section">
+            <!-- AI Controls -->
+            <div class="ai-controls glass-panel">
+                <h2 class="ai-title">
+                    <span>🤖</span>
+                    <span data-en="AI Assistant" data-ar="المساعد الذكي">AI Assistant</span>
+                </h2>
+            </div>
+
+            <!-- AI Action Buttons -->
+            <div class="ai-actions glass-panel">
+                <button class="btn btn-ai" data-action="generate_code">
+                    <span>✨</span>
+                    <span data-en="Generate Code" data-ar="توليد الكود">Generate Code</span>
+                </button>
+                <button class="btn btn-ai" data-action="check_and_fix">
+                    <span>🔧</span>
+                    <span data-en="Check & Fix" data-ar="فحص وإصلاح">Check & Fix</span>
+                </button>
+                <button class="btn btn-ai" data-action="improve_code">
+                    <span>⚡</span>
+                    <span data-en="Improve Code" data-ar="تحسين الكود">Improve Code</span>
+                </button>
+            </div>
+
+            <!-- AI Prompt Input -->
+            <div class="ai-prompt glass-panel">
+                <label class="section-label" data-en="AI Prompt" data-ar="طلب الذكاء الاصطناعي">AI Prompt</label>
+                <textarea id="aiPrompt" placeholder="Describe what you want the AI to do..."></textarea>
+                <button class="btn btn-primary" id="sendPromptBtn">
+                    <span>💬</span>
+                    <span data-en="Send" data-ar="إرسال">Send</span>
+                </button>
+            </div>
+
+            <!-- AI Output -->
+            <div class="ai-output-section glass-panel">
+                <div class="output-header">
+                    <label class="section-label" data-en="AI Response" data-ar="استجابة الذكاء الاصطناعي">AI Response</label>
+                    <button class="btn-icon" id="clearAiOutputBtn" title="Clear AI Output">
+                        <span>✕</span>
+                    </button>
+                </div>
+                <div id="aiOutput" class="ai-output-content"></div>
+            </div>
+
+            <!-- Chat History -->
+            <div class="chat-history glass-panel">
+                <label class="section-label" data-en="Chat History" data-ar="سجل المحادثة">Chat History</label>
+                <div id="chatHistory" class="chat-content"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <p data-en="Processing..." data-ar="جاري المعالجة...">Processing...</p>
+    </div>
+
+    <!-- Monaco Editor Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

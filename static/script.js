@@ -22,6 +22,15 @@ function getMsg(key) {
     return messages[key] ? messages[key][currentDir] || messages[key].en : key;
 }
 
+// Remove markdown code blocks and extra lines before inserting into editor
+function cleanCodeForEditor(text) {
+    if (!text || typeof text !== 'string') return '';
+    let code = text.trim();
+    const match = code.match(/^```(?:\w*)\n?([\s\S]*?)\n?```\s*$/);
+    if (match) code = match[1];
+    return code.trim();
+}
+
 // ============================================
 // Monaco Editor Initialization
 // ============================================
@@ -275,7 +284,7 @@ async function sendAIPrompt() {
             // If it's generate_code action and we got code, offer to insert it
             if (selectedAIAction === 'generate_code' && data.code) {
                 if (confirm(getMsg('insertCodeConfirm'))) {
-                    monacoEditor.setValue(data.code);
+                    monacoEditor.setValue(cleanCodeForEditor(data.code));
                 }
             }
 

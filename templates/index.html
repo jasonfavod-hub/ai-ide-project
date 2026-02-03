@@ -40,11 +40,11 @@
             <!-- Editor Controls -->
             <div class="controls-panel glass-panel">
                 <div class="controls-left">
-                    <button class="btn btn-primary" id="runBtn">
+                    <button class="btn btn-primary" id="runBtn" title="Run code (Ctrl+Enter)">
                         <span>▶</span>
                         <span data-en="Run" data-ar="تشغيل">Run</span>
                     </button>
-                    <button class="btn btn-secondary" id="clearCodeBtn">
+                    <button class="btn btn-secondary" id="clearCodeBtn" title="Clear code (Ctrl+Shift+K)">
                         <span>🗑</span>
                         <span data-en="Clear Code" data-ar="مسح الكود">Clear Code</span>
                     </button>
@@ -92,15 +92,15 @@
 
             <!-- AI Action Buttons -->
             <div class="ai-actions glass-panel">
-                <button class="btn btn-ai" data-action="generate_code">
+                <button class="btn btn-ai" data-action="generate_code" title="Describe what you want and AI writes the code">
                     <span>✨</span>
                     <span data-en="Generate Code" data-ar="توليد الكود">Generate Code</span>
                 </button>
-                <button class="btn btn-ai" data-action="check_and_fix">
+                <button class="btn btn-ai" data-action="check_and_fix" title="AI finds and fixes errors in your code">
                     <span>🔧</span>
                     <span data-en="Check & Fix" data-ar="فحص وإصلاح">Check & Fix</span>
                 </button>
-                <button class="btn btn-ai" data-action="improve_code">
+                <button class="btn btn-ai" data-action="improve_code" title="AI improves code quality and efficiency">
                     <span>⚡</span>
                     <span data-en="Improve Code" data-ar="تحسين الكود">Improve Code</span>
                 </button>
@@ -110,7 +110,7 @@
             <div class="ai-prompt glass-panel">
                 <label class="section-label" data-en="AI Prompt" data-ar="طلب الذكاء الاصطناعي">AI Prompt</label>
                 <textarea id="aiPrompt" placeholder="Describe what you want the AI to do..."></textarea>
-                <button class="btn btn-primary" id="sendPromptBtn">
+                <button class="btn btn-primary" id="sendPromptBtn" title="Send your request to AI">
                     <span>💬</span>
                     <span data-en="Send" data-ar="إرسال">Send</span>
                 </button>
@@ -139,6 +139,30 @@
     <div class="loading-overlay" id="loadingOverlay">
         <div class="spinner"></div>
         <p data-en="Processing..." data-ar="جاري المعالجة...">Processing...</p>
+    </div>
+
+    <!-- Help Guide -->
+    <div class="help-panel">
+        <button class="help-trigger" id="helpTrigger" title="دليل الاستخدام / Usage Guide">❓</button>
+    </div>
+    <div class="help-modal" id="helpModal">
+        <div class="help-content glass-panel">
+            <h2 data-en="📖 Quick Usage Guide" data-ar="📖 دليل الاستخدام السريع">📖 Quick Usage Guide</h2>
+            <p data-en="Write Python code and click ▶ Run to execute" data-ar="اكتب كود Python واضغط ▶ تشغيل للتنفيذ">Write Python code and click ▶ Run to execute</p>
+            <ul>
+                <li><span class="step-num">1</span><span data-en="Write your code in the editor" data-ar="اكتب كودك في المحرر">Write your code in the editor</span></li>
+                <li><span class="step-num">2</span><span data-en="(Optional) Add inputs in Runtime Inputs" data-ar="(اختياري) أضف مدخلات في مدخلات التشغيل">(Optional) Add inputs in Runtime Inputs</span></li>
+                <li><span class="step-num">3</span><span data-en="Press ▶ Run or Ctrl+Enter" data-ar="اضغط ▶ تشغيل أو Ctrl+Enter">Press ▶ Run or Ctrl+Enter</span></li>
+                <li><span class="step-num">4</span><span data-en="For AI: Select action then write your request" data-ar="للذكاء الاصطناعي: اختر إجراء ثم اكتب الطلب">For AI: Select action then write your request</span></li>
+            </ul>
+            <h3 data-en="Keyboard Shortcuts" data-ar="اختصارات لوحة المفاتيح">Keyboard Shortcuts</h3>
+            <ul>
+                <li><span class="shortcut">Ctrl+Enter</span> <span data-en="Run code" data-ar="تشغيل الكود">Run code</span></li>
+                <li><span class="shortcut">Ctrl+Shift+K</span> <span data-en="Clear code" data-ar="مسح الكود">Clear code</span></li>
+                <li><span class="shortcut">Ctrl+Shift+L</span> <span data-en="Clear output" data-ar="مسح الإخراج">Clear output</span></li>
+            </ul>
+            <button class="help-close" id="helpClose" data-en="Got it ✓" data-ar="فهمت ✓">Got it ✓</button>
+        </div>
     </div>
 
     <!-- Monaco Editor Scripts -->

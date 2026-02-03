@@ -9,6 +9,19 @@ let currentTheme = 'dark';
 let currentDir = 'ltr';
 let selectedAIAction = null;
 
+// Bilingual messages
+const messages = {
+    selectAIAction: { en: 'Please select an AI action first!', ar: 'الرجاء اختيار إجراء AI أولاً!' },
+    enterCodeFirst: { en: 'Please enter code in the editor before using this action.', ar: 'الرجاء إدخال كود في المحرر قبل استخدام هذا الإجراء.' },
+    enterPromptFirst: { en: 'Please enter a valid prompt before sending.', ar: 'الرجاء إدخال نص أو طلب صالح قبل الإرسال.' },
+    confirmClearCode: { en: 'Are you sure you want to clear the code?', ar: 'هل أنت متأكد من مسح الكود؟' },
+    insertCodeConfirm: { en: 'Would you like to insert this code into the editor?', ar: 'هل تريد إدراج هذا الكود في المحرر؟' }
+};
+
+function getMsg(key) {
+    return messages[key] ? messages[key][currentDir] || messages[key].en : key;
+}
+
 // ============================================
 // Monaco Editor Initialization
 // ============================================
@@ -26,18 +39,27 @@ window.MonacoEnvironment = {
 };
 
 require(['vs/editor/editor.main'], function () {
+    const isSmallScreen = window.innerWidth < 768;
     monacoEditor = monaco.editor.create(document.getElementById('monacoEditor'), {
         value: '# Welcome to AI IDE\n# Write your Python code here\n\nprint("Hello, World!")\n',
         language: 'python',
         theme: 'vs-dark',
         fontSize: 14,
         automaticLayout: true,
-        minimap: { enabled: true },
+        minimap: { enabled: !isSmallScreen },
         scrollBeyondLastLine: false,
         wordWrap: 'on',
         lineNumbers: 'on',
         renderWhitespace: 'selection',
         tabSize: 4,
+    });
+
+    // Disable minimap on resize if screen gets small
+    window.addEventListener('resize', function () {
+        if (monacoEditor) {
+            const small = window.innerWidth < 768;
+            monacoEditor.updateOptions({ minimap: { enabled: !small } });
+        }
     });
 
     // Initialize UI after Monaco is loaded
@@ -73,10 +95,11 @@ function initializeUI() {
     document.querySelectorAll('.btn-ai').forEach(button => {
         button.addEventListener('click', function () {
             selectedAIAction = this.getAttribute('data-action');
-            // Highlight selected action
-            document.querySelectorAll('.btn-ai').forEach(btn => btn.style.opacity = '1');
-            this.style.opacity = '0.7';
-            updateStatus('AI Action selected: ' + selectedAIAction);
+            document.querySelectorAll('.btn-ai').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            this.classList.add('selected');
+            updateStatus(currentDir === 'rtl' ? 'تم اختيار: ' + selectedAIAction : 'AI Action selected: ' + selectedAIAction);
         });
     });
 
@@ -85,6 +108,9 @@ function initializeUI() {
 
     // Load saved theme preference
     loadThemePreference();
+
+    // Help Guide
+    initHelpGuide();
 
     console.log('AI IDE initialized successfully!');
 }
@@ -120,10 +146,10 @@ function toggleDirection() {
     const htmlElement = document.querySelector('html');
     htmlElement.setAttribute('lang', currentDir === 'rtl' ? 'ar' : 'en');
 
-    // Update text content based on direction
+    // Update text content based on direction (including help modal)
     updateTextContent();
 
-    updateStatus(`Direction changed to ${currentDir.toUpperCase()}`);
+    updateStatus(currentDir === 'rtl' ? 'تم تغيير الاتجاه' : `Direction changed to ${currentDir.toUpperCase()}`);
 }
 
 // ============================================
@@ -196,22 +222,20 @@ async function sendAIPrompt() {
 
     // CRITICAL: Rigorous client-side validation
     if (!selectedAIAction) {
-        showAIOutput('الرجاء اختيار إجراء AI أولاً!', true);
+        showAIOutput(getMsg('selectAIAction'), true);
         return;
     }
 
     // Validate based on action type
     if (['check_and_fix', 'improve_code'].includes(selectedAIAction)) {
-        // For code-related actions, check if editor has code
         const currentCode = monacoEditor.getValue().trim();
         if (!currentCode || currentCode.length === 0) {
-            showAIOutput('الرجاء إدخال كود في المحرر قبل استخدام هذا الإجراء.', true);
+            showAIOutput(getMsg('enterCodeFirst'), true);
             return;
         }
     } else {
-        // For generate_code or chat_response, check if prompt is provided
         if (!prompt || prompt.length === 0) {
-            showAIOutput('الرجاء إدخال نص أو طلب صالح قبل الإرسال.', true);
+            showAIOutput(getMsg('enterPromptFirst'), true);
             return;
         }
     }
@@ -250,7 +274,7 @@ async function sendAIPrompt() {
 
             // If it's generate_code action and we got code, offer to insert it
             if (selectedAIAction === 'generate_code' && data.code) {
-                if (confirm('Would you like to insert this code into the editor?')) {
+                if (confirm(getMsg('insertCodeConfirm'))) {
                     monacoEditor.setValue(data.code);
                 }
             }
@@ -276,9 +300,9 @@ async function sendAIPrompt() {
 // Clear Functions
 // ============================================
 function clearCode() {
-    if (confirm('Are you sure you want to clear the code?')) {
+    if (confirm(getMsg('confirmClearCode'))) {
         monacoEditor.setValue('');
-        updateStatus('Code cleared');
+        updateStatus(currentDir === 'rtl' ? 'تم مسح الكود' : 'Code cleared');
     }
 }
 
@@ -393,6 +417,31 @@ function initializeResizer() {
             document.body.style.userSelect = 'auto';
         }
     });
+}
+
+// ============================================
+// Help Guide
+// ============================================
+function initHelpGuide() {
+    const trigger = document.getElementById('helpTrigger');
+    const modal = document.getElementById('helpModal');
+    const closeBtn = document.getElementById('helpClose');
+
+    if (trigger && modal) {
+        trigger.addEventListener('click', () => modal.classList.add('active'));
+        if (closeBtn) closeBtn.addEventListener('click', () => modal.classList.remove('active'));
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.classList.remove('active');
+        });
+    }
+
+    // Show guide on first visit (optional - delayed)
+    if (!localStorage.getItem('ai-ide-help-seen')) {
+        setTimeout(() => {
+            if (modal) modal.classList.add('active');
+            localStorage.setItem('ai-ide-help-seen', 'true');
+        }, 2000);
+    }
 }
 
 // ============================================
